@@ -1,25 +1,38 @@
 import os
 import time
+import glob
 import pandas as pd
-from sqlalchemy import create_engine
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+from sqlalchemy import create_engine, exc
 
-class Handler(FileSystemEventHandler):
-    def on_created(self, event):
-        df = pd.read_csv(event.src_path)
-        df.to_sql(os.path.splitext(event.src_path)[0], engine, if_exists='replace')
+database_initialized = False
+while not database_initialized:
+    try:
+        engine = create_engine('postgresql://admin:admin@db:5432/dbname')
+        with engine.connect() as connection:
+            with connection.begin():
+                # Try a simple query to check if connection is established
+                connection.execute("SELECT 1")
+                database_initialized = True
+    except exc.DBAPIError as e:
+        print("Database not ready yet, waiting...")
+        time.sleep(5)
 
-engine = create_engine('postgresql://admin:admin@db:5432/dbname')
-event_handler = Handler()
-observer = Observer()
-observer.schedule(event_handler, path='/app/data/', recursive=False)
-observer.start()
+print("Database connection established.")
 
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    observer.stop()
+while True:
+    for file in glob.glob("/app/data/*.csv"):
+        try:
+            # Read CSV file into a DataFrame
+            df = pd.read_csv(file)
 
-observer.join()
+            # Write DataFrame to PostgreSQL
+            df.to_sql(os.path.basename(file), engine, if_exists='replace')
+
+            print(f"Loaded file {file} into database.")
+
+            # Delete file after loading
+            os.remove(file)
+            print(f"Deleted file {file}.")
+        except Exception as e:
+            print(f"Failed to process file {file}: {str(e)}")
+    time.sleep(5)
