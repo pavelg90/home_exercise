@@ -1,9 +1,20 @@
+import time
 from fastapi import FastAPI
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, exc
 
 app = FastAPI()
 
-engine = create_engine('postgresql://admin:admin@db:5432/dbname')
+database_initialized = False
+while not database_initialized:
+    try:
+        engine = create_engine('postgresql://admin:admin@db:5432/dbname')
+        with engine.connect() as connection:
+            # Try a simple query to check if connection is established
+            connection.execute("SELECT 1")
+            database_initialized = True
+    except exc.DBAPIError as e:
+        print("Database not ready yet, waiting...")
+        time.sleep(5)
 
 @app.get("/")
 def read_root():
