@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from sqlalchemy import create_engine, exc
+from sqlalchemy import create_engine, exc, text
+import time
 
 app = FastAPI()
 
@@ -10,7 +11,7 @@ while not database_initialized:
         with engine.connect() as connection:
             with connection.begin():
                 # Try a simple query to check if connection is established
-                connection.execute("SELECT 1")
+                connection.execute(text("SELECT 1"))
                 database_initialized = True
     except exc.DBAPIError as e:
         print("Database not ready yet, waiting...")
@@ -24,6 +25,13 @@ def read_root():
 def read_item(id: int):
     with engine.connect() as connection:
         with connection.begin():
-            result = connection.execute(f"SELECT * FROM users WHERE ID = {id}")
+            result = connection.execute(
+                text(f"SELECT * FROM users WHERE ID = {id}")
+            )
             row = result.fetchone()
-            return {"id": row[0], "name": row[1]} if row else {"message": "User not found"}
+            return {
+                "id": row[0],
+                "name": row[1]
+            } if row else {
+                "message": "User not found"
+            }
