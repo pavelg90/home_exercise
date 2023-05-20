@@ -44,8 +44,7 @@ services:
     restart: always
 
   streamlit:
-    build:
-      context: ./streamlit
+    build: ./streamlit
     ports:
       - "8501:8501"
     depends_on:
