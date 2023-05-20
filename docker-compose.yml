@@ -28,5 +28,25 @@ services:
       - db
     restart: always
 
+  s3_simulator:
+    image: minio/minio
+    volumes:
+      - s3data:/data
+    ports:
+      - "333:9000"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data && mc mb mybucket
+
+  streamlit:
+    build:
+      context: ./streamlit
+    ports:
+      - "8501:8501"
+    depends_on:
+      - s3_simulator
+
 volumes:
   dbdata:
+  s3data:

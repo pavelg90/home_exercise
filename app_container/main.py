@@ -1,38 +1,26 @@
+import boto3
 import os
-import time
-import glob
 import pandas as pd
-from sqlalchemy import create_engine, exc, text
+from sqlalchemy import create_engine
+from io import StringIO
 
-database_initialized = False
-while not database_initialized:
-    try:
-        engine = create_engine('postgresql://admin:admin@db:5432/dbname')
-        with engine.connect() as connection:
-            with connection.begin():
-                # Try a simple query to check if connection is established
-                connection.execute(text("SELECT 1"))
-                database_initialized = True
-    except exc.DBAPIError as e:
-        print("Database not ready yet, waiting...")
-        time.sleep(5)
+# Set up MinIO client
+s3 = boto3.client('s3', endpoint_url='http://s3_simulator:9000',
+                  aws_access_key_id='minio',
+                  aws_secret_access_key='minio123')
 
-print("Database connection established.")
+# Set up SQLAlchemy engine
+engine = create_engine('postgresql://admin:admin@db:5432/')
 
-while True:
-    for file in glob.glob("/app/data/*.csv"):
-        try:
-            # Read CSV file into a DataFrame
-            df = pd.read_csv(file)
+# Download CSV files from MinIO and load them into the PostgreSQL database
+def load_csvs_from_minio_to_db():
+    for obj in s3.list_objects(Bucket='mybucket')['Contents']:
+        filename = obj['Key']
+        csv_obj = s3.get_object(Bucket='mybucket', Key=filename)
+        body = csv_obj['Body'].read().decode('utf-8')
+        df = pd.read_csv(StringIO(body))
+        table_name = os.path.splitext(filename)[0]  # Use the CSV filename (without extension) as the table name
+        df.to_sql(table_name, engine, if_exists='replace')
 
-            # Write DataFrame to PostgreSQL
-            df.to_sql(os.path.basename(file), engine, if_exists='replace')
-
-            print(f"Loaded file {file} into database.")
-
-            # Delete file after loading
-            os.remove(file)
-            print(f"Deleted file {file}.")
-        except Exception as e:
-            print(f"Failed to process file {file}: {str(e)}")
-    time.sleep(5)
+if __name__ == "__main__":
+    load_csvs_from_minio_to_db()
