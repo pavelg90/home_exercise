@@ -1,0 +1,4 @@
+watchdog
+pandas
+sqlalchemy
+psycopg2-binary

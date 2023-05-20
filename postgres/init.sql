@@ -1,0 +1,6 @@
+CREATE TABLE users (
+  ID SERIAL PRIMARY KEY,
+  NAME TEXT NOT NULL
+);
+
+INSERT INTO users (NAME) VALUES ('Haim'), ('Pavel');
