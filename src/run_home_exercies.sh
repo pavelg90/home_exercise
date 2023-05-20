@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define the repository details
-REPO_URL="https://github.com/username/repo-name.git"
-LOCAL_DIR="/path/to/local/directory"
+REPO_URL="https://github.com/pavelg90/home_exercise.git"
+LOCAL_DIR="C:\Users\User\Desktop\Projects\ireg\home_exercise_repo"
 
 # Clone the repository
 git clone $REPO_URL $LOCAL_DIR
