@@ -2,7 +2,7 @@ import os
 import time
 import glob
 import pandas as pd
-from sqlalchemy import create_engine, exc
+from sqlalchemy import create_engine, exc, text
 
 database_initialized = False
 while not database_initialized:
@@ -11,7 +11,7 @@ while not database_initialized:
         with engine.connect() as connection:
             with connection.begin():
                 # Try a simple query to check if connection is established
-                connection.execute("SELECT 1")
+                connection.execute(text("SELECT 1"))
                 database_initialized = True
     except exc.DBAPIError as e:
         print("Database not ready yet, waiting...")
