@@ -11,7 +11,7 @@ def main():
     # Create a client with the MinIO server playground, its access key
     # and secret key.
     client = Minio(
-        "s3_simulator:9000",
+        "127.0.0.1:9000",
         access_key="minio",
         secret_key="minio123",
         secure=False,
