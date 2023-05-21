@@ -1,3 +1,4 @@
+import time
 '''
 from minio import Minio
 from minio.error import S3Error
@@ -30,5 +31,7 @@ def load_csvs_from_minio_to_db():
 '''
 b=1
 if __name__ == "__main__":
-    a=1
+    while True:
+        a=1
+        time.sleep(1)
     #load_csvs_from_minio_to_db()
