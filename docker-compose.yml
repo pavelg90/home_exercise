@@ -34,8 +34,8 @@ services:
   app_container:
     build:
       context: ./app_container
-    ports:
-      - "999:80"
+    volumes:
+      - ./:/app
     depends_on:
       - db
     restart: always
