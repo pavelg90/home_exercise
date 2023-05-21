@@ -35,9 +35,7 @@ services:
     build:
       context: ./app_container
     ports:
-      - "80:80"
-    volumes:
-      - ./app_container/data:/app/data
+      - "999:80"
     depends_on:
       - db
       - s3_simulator
@@ -45,5 +43,4 @@ services:
 
 volumes:
   dbdata:
-  s3data:
   data:
