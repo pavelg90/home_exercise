@@ -1,14 +1,12 @@
-import boto3
+from minio import Minio
+from minio.error import S3Error
 import os
 import pandas as pd
 from sqlalchemy import create_engine
 from io import StringIO
 
 # Set up MinIO client
-s3 = boto3.resource('s3',
-                  endpoint_url='http://s3_simulator:9000',
-                  aws_access_key_id='minio',
-                  aws_secret_access_key='minio123')
+client = 1
 
 # Set up SQLAlchemy engine
 engine = create_engine('postgresql://admin:admin@db:5432/')
@@ -27,4 +25,4 @@ def load_csvs_from_minio_to_db():
             print('Something bad happened, or not...')
 
 if __name__ == "__main__":
-    load_csvs_from_minio_to_db()
+    pass#load_csvs_from_minio_to_db()
