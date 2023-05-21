@@ -37,7 +37,7 @@ services:
     volumes:
       - app:/app
     command:
-      - python
+      - python main.py
     depends_on:
       - db
     restart: always
