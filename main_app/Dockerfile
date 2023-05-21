@@ -1,10 +1,11 @@
-FROM python:3.6-alpine
+FROM python:3.9-alpine
 
 WORKDIR /app
 
 COPY ./requirements.txt ./requirements.txt
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./main.py ./main.py
 
-CMD ["python", "main.py"]
+CMD ["python", "/app/main.py"]

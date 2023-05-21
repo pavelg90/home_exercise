@@ -33,11 +33,8 @@ services:
 
   app_container:
     build:
-      context: ./app_container
-    volumes:
-      - app:/app
-    depends_on:
-      - db
+      context: ./main_app
+      dockerfile: Dockerfile
     restart: always
 
 volumes:
