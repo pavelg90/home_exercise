@@ -35,8 +35,8 @@ services:
     build:
       context: ./main_app
       dockerfile: Dockerfile
-    ports:
-      - "443:443"
+    depends_on:
+      - db
     restart: always
 
 volumes:
