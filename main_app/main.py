@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
-from minio.error import S3Error
-from minio import Minio
+import boto3
 from io import BytesIO
 import pandas as pd
 import time
@@ -10,56 +9,31 @@ import os
 def main():
     # Create a client with the MinIO server playground, its access key
     # and secret key.
-    client = Minio(
-        "s3_simulator:9000",
-        access_key="minio",
-        secret_key="minio123",
-        secure=False,
-    )
+    s3_target = boto3.resource(
+        's3',
+        endpoint_url='http://192.168.96.3:9000',
+        aws_access_key_id='minio',
+        aws_secret_access_key='minio123',
+        aws_session_token=None,
+        config=boto3.session.Config(signature_version='s3v4'),verify=False)
 
     engine = create_engine('postgresql://admin:admin@db:5432/dbname')
 
-    # Specify the bucket name
-    bucket_name = "mybucket"
+    for bucket in s3_target.buckets.all():
+        bucket_name = bucket.name
+        for bucket in s3_target.buckets.all():
+            for file in bucket.objects.all():
+                filename = file.key
+                if '.csv' in filename:
+                    response = s3_target.Object(bucket_name, filename).get()
+                    df = pd.read_csv(BytesIO(response['Body'].read()))
 
-    # Make 'mybucket' bucket if not exist.
-    if not client.bucket_exists(bucket_name):
-        client.make_bucket(bucket_name)
-    else:
-        print(f"Bucket {bucket_name} already exists")
+                    # Write to table
+                    df.to_sql(filename, engine, if_exists='replace')
 
-    try:
-        # List all object names in bucket
-        objects = client.list_objects(bucket_name)
+                    # Delete file:
+                    s3_target.Object(bucket_name, filename).delete()
 
-        for obj in objects:
-            # Only process CSV files
-            if obj.object_name.endswith('.csv'):
-                # Get the CSV data
-                data = client.get_object(bucket_name, obj.object_name)
-
-                # Load CSV data into a DataFrame
-                df = pd.read_csv(BytesIO(data.read()))
-
-                # Use CSV file name (without extension) as table name
-                table_name = obj.object_name
-
-                # Write DataFrame to PostgreSQL table
-                df.to_sql(table_name, engine, if_exists='replace')
-
-                # Delete the file from the bucket after it has been processed
-                client.remove_object(bucket_name, obj.object_name)
-
-    except S3Error as err:
-        print(f"Error: {err}")
-
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except S3Error as exc:
-        print("error occurred.", exc)
 
 if __name__ == "__main__":
     while True:
@@ -68,4 +42,4 @@ if __name__ == "__main__":
         except Exception as e:
             print("error occurred.", e)
 
-        time.sleep(1)
+        time.sleep(1.5)
