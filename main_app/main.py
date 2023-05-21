@@ -9,13 +9,7 @@ import os
 def main():
     # Create a client with the MinIO server playground, its access key
     # and secret key.
-    s3_target = boto3.resource(
-        's3',
-        endpoint_url='http://192.168.96.3:9000',
-        aws_access_key_id='minio',
-        aws_secret_access_key='minio123',
-        aws_session_token=None,
-        config=boto3.session.Config(signature_version='s3v4'),verify=False)
+    s3_target = boto3.resource('s3',endpoint_url='http://host.docker.internal:9000',aws_access_key_id='minio',aws_secret_access_key='minio123',aws_session_token=None,config=boto3.session.Config(signature_version='s3v4'),verify=False)
 
     engine = create_engine('postgresql://admin:admin@db:5432/dbname')
 
