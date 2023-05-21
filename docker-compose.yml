@@ -34,9 +34,10 @@ services:
   app_container:
     build:
       context: ./app_container
+    ports:
+      - "999:80"
     depends_on:
       - db
-      - s3_simulator
     restart: always
 
 volumes:
