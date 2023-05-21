@@ -1,7 +1,8 @@
+'''
 from minio import Minio
 from minio.error import S3Error
 
-'''
+
 import os
 import pandas as pd
 from sqlalchemy import create_engine
@@ -27,7 +28,7 @@ def load_csvs_from_minio_to_db():
         except:
             print('Something bad happened, or not...')
 '''
-
+b=1
 if __name__ == "__main__":
     a=1
     #load_csvs_from_minio_to_db()
