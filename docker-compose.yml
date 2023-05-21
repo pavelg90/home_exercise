@@ -22,7 +22,8 @@ services:
   s3_simulator:
     image: minio/minio
     ports:
-      - "333:9000"
+      - "9000:9000"
+      - "9090:9090"
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
@@ -42,13 +43,6 @@ services:
     depends_on:
       - db
     restart: always
-
-  streamlit:
-    build: ./streamlit
-    ports:
-      - "8501:8501"
-    depends_on:
-      - s3_simulator
 
 volumes:
   dbdata:

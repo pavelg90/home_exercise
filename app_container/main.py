@@ -6,7 +6,7 @@ from io import StringIO
 
 # Set up MinIO client
 s3 = boto3.client('s3',
-                  endpoint_url='http://localhost:333',
+                  endpoint_url='http://s3_simulator:9000',
                   aws_access_key_id='minio',
                   aws_secret_access_key='minio123')
 
