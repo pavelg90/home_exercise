@@ -1,4 +1,4 @@
+psycopg2-binary
+sqlalchemy
 minio
 pandas
-sqlalchemy
-psycopg2-binary
