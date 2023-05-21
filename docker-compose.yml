@@ -26,8 +26,8 @@ services:
       - "9090:9090"
       - "35225:35225"
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
     command: server /data
 
   create_bucket:
