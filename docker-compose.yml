@@ -34,6 +34,8 @@ services:
   app_container:
     build:
       context: ./app_container
+    ports:
+      - "80:80"
     volumes:
       - ./app_container/data:/app/data
     depends_on:
