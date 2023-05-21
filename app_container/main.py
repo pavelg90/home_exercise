@@ -12,6 +12,7 @@ client = 1
 engine = create_engine('postgresql://admin:admin@db:5432/')
 
 # Download CSV files from MinIO and load them into the PostgreSQL database
+'''
 def load_csvs_from_minio_to_db():
     for obj in s3.list_objects(Bucket='mybucket')['Contents']:
         try:
@@ -23,6 +24,7 @@ def load_csvs_from_minio_to_db():
             df.to_sql(table_name, engine, if_exists='replace')
         except:
             print('Something bad happened, or not...')
+'''
 
 if __name__ == "__main__":
     pass#load_csvs_from_minio_to_db()
