@@ -40,6 +40,7 @@ services:
       - ./app_container/data:/app/data
     depends_on:
       - db
+      - s3_simulator
     restart: always
 
 volumes:
