@@ -21,20 +21,16 @@ services:
 
   s3_simulator:
     image: minio/minio
+    volumes:
+      - data:/data
     ports:
       - "9000:9000"
-      - "9090:9090"
-      - "35225:35225"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
+      MINIO_CONSOLE_PORT: '9001'
     command: server /data
-
-  create_bucket:
-    image: minio/mc
-    depends_on:
-      - s3_simulator
-    entrypoint: [ "sh", "-c", "mc config host add s3_simulator http://s3_simulator:9000 minio minio123 && mc mb s3_simulator/mybucket" ]
 
   app_container:
     build:
@@ -48,3 +44,4 @@ services:
 volumes:
   dbdata:
   s3data:
+  data:
