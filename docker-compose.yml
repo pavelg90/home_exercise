@@ -35,7 +35,9 @@ services:
     build:
       context: ./app_container
     volumes:
-      - ./:/app
+      - app:/app
+    command:
+      - python
     depends_on:
       - db
     restart: always
@@ -43,3 +45,4 @@ services:
 volumes:
   dbdata:
   data:
+  app:
