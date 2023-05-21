@@ -9,7 +9,12 @@ import os
 def main():
     # Create a client with the MinIO server playground, its access key
     # and secret key.
-    s3_target = boto3.resource('s3',endpoint_url='http://host.docker.internal:9000',aws_access_key_id='minio',aws_secret_access_key='minio123',aws_session_token=None,config=boto3.session.Config(signature_version='s3v4'),verify=False)
+    s3_target = boto3.resource('s3',
+                               endpoint_url='http://host.docker.internal:9000',
+                               aws_access_key_id='minio',
+                               aws_secret_access_key='minio123',
+                               aws_session_token=None,
+                               config=boto3.session.Config(signature_version='s3v4'),verify=False)
 
     engine = create_engine('postgresql://admin:admin@db:5432/dbname')
 
@@ -19,11 +24,12 @@ def main():
             for file in bucket.objects.all():
                 filename = file.key
                 if '.csv' in filename:
+                    # Download file
                     response = s3_target.Object(bucket_name, filename).get()
                     df = pd.read_csv(BytesIO(response['Body'].read()))
 
                     # Write to table
-                    df.to_sql(filename, engine, if_exists='replace')
+                    df.to_sql(filename.replace('.csv', ''), engine, if_exists='replace')
 
                     # Delete file:
                     s3_target.Object(bucket_name, filename).delete()
