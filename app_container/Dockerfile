@@ -1,9 +1,10 @@
 FROM python:3.4-alpine
 
-WORKDIR . /app_container
+WORKDIR /app
 
-WORKDIR /app_container
+COPY ./requirements.txt ./requirements.txt
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "main.py"]
+COPY ./main.py ./main.py
+
